@@ -1,0 +1,17 @@
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /app
+
+# Copy all code
+COPY . .
+
+# Move to your API project folder
+WORKDIR /app/Api
+
+# Restore dependencies
+RUN dotnet restore
+
+# Expose port
+EXPOSE 8000
+
+# Enable hot reload
+CMD ["dotnet", "watch", "run", "--urls", "http://0.0.0.0:8000"]

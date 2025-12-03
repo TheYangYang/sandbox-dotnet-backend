@@ -29,3 +29,15 @@ sandbox-dotnet-backend/
 ### 1. Restore dependencies
 ```bash
 dotnet restore
+```
+### 2. Enable hot reload api
+```bash
+dotnet watch run
+```
+### 3. Use docker
+```bash
+docker build -t sandbox-backend-dev -f Dockerfile.dev .
+```
+```bash
+docker run -p 8000:8000 -v ${PWD}:/app -v /app/bin -v /app/obj --name sandbox-backend sandbox-backend-dev
+```

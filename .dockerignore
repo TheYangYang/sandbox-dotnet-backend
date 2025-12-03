@@ -1,0 +1,31 @@
+# Build outputs
+bin/
+obj/
+out/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Local configuration
+*.env
+appsettings.*.json
+
+# Logs
+*.log
+
+# IDE / editor files
+.vscode/
+.idea/
+*.code-workspace
+
+# Git
+.git/
+.gitignore
+
+# Temporary files
+*.tmp
+*.swp
+.DS_Store
