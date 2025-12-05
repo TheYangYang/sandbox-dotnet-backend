@@ -2,15 +2,22 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-# Copy solution + restore (better caching)
-COPY *.sln .
+# Copy solution file
+COPY sandbox.sln .
+
+# Copy each project file (important for caching!)
 COPY Api/Api.csproj Api/
+COPY Application/Application.csproj Application/
+COPY Domain/Domain.csproj Domain/
+COPY Persistence/Persistence.csproj Persistence/
+
+# Restore dependencies
 RUN dotnet restore
 
-# Copy all source
+# Copy ALL source code
 COPY . .
 
-# Publish app
+# Publish API project
 RUN dotnet publish Api/Api.csproj -c Release -o /app/publish
 
 
@@ -18,14 +25,12 @@ RUN dotnet publish Api/Api.csproj -c Release -o /app/publish
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 
-# Copy published build artifacts
+# Copy published output
 COPY --from=build /app/publish .
 
-# Render provides PORT — use it
+# Render uses PORT env var
 ENV ASPNETCORE_URLS=http://0.0.0.0:${PORT}
 
-# Expose (optional — Render ignores EXPOSE)
 EXPOSE 8000
 
-# Run the application
 ENTRYPOINT ["dotnet", "Api.dll"]
