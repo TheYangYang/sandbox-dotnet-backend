@@ -1,0 +1,31 @@
+# === Build Stage ===
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+
+# Copy solution + restore (better caching)
+COPY *.sln .
+COPY Api/Api.csproj Api/
+RUN dotnet restore
+
+# Copy all source
+COPY . .
+
+# Publish app
+RUN dotnet publish Api/Api.csproj -c Release -o /app/publish
+
+
+# === Runtime Stage ===
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
+WORKDIR /app
+
+# Copy published build artifacts
+COPY --from=build /app/publish .
+
+# Render provides PORT — use it
+ENV ASPNETCORE_URLS=http://0.0.0.0:${PORT}
+
+# Expose (optional — Render ignores EXPOSE)
+EXPOSE 8000
+
+# Run the application
+ENTRYPOINT ["dotnet", "Api.dll"]
