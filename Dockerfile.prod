@@ -1,11 +1,13 @@
-# === Build Stage ===
+# ============================
+#        BUILD STAGE
+# ============================
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
 # Copy solution file
 COPY sandbox.sln .
 
-# Copy each project file (important for caching!)
+# Copy each project file (for better layer caching)
 COPY Api/Api.csproj Api/
 COPY Application/Application.csproj Application/
 COPY Domain/Domain.csproj Domain/
@@ -14,23 +16,31 @@ COPY Persistence/Persistence.csproj Persistence/
 # Restore dependencies
 RUN dotnet restore
 
-# Copy ALL source code
+# Copy full source code
 COPY . .
 
-# Publish API project
+# Publish API project to /app/publish
 RUN dotnet publish Api/Api.csproj -c Release -o /app/publish
 
 
-# === Runtime Stage ===
+# ============================
+#       RUNTIME STAGE
+# ============================
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 
-# Copy published output
+# Copy published output from build stage
 COPY --from=build /app/publish .
 
-# Render uses PORT env var
+# Render injects PORT env var (example: 10000)
+# Bind Kestrel to Render's dynamic port
 ENV ASPNETCORE_URLS=http://0.0.0.0:${PORT}
 
-EXPOSE 8000
+# Disable HTTPS redirect (Render handles HTTPS at the proxy)
+ENV ASPNETCORE_HTTPS_PORT=""
 
+# EXPOSE does NOT matter for Render, but leaving 8080 is standard
+EXPOSE 8080
+
+# Start the API
 ENTRYPOINT ["dotnet", "Api.dll"]
