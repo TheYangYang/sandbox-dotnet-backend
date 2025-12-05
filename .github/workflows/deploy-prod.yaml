@@ -34,7 +34,7 @@ jobs:
 
       # 5️⃣ Run all tests without rebuilding
       - name: Run tests
-        run: dotnet test sandbox.sln --no-build --verbosity normal
+        run: dotnet test sandbox.sln --verbosity normal
 
       # 6️⃣ Deploy to Render only if tests pass
       - name: Deploy to Render via Hook
