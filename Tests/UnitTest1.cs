@@ -1,6 +1,4 @@
-﻿using Xunit;
-
-namespace Sandbox.Tests
+﻿namespace Sandbox.Tests
 {
     public class PassingTests
     {

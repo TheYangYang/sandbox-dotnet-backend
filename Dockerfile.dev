@@ -1,0 +1,32 @@
+# ============================
+#        DEVELOPMENT STAGE
+# ============================
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS dev
+WORKDIR /app
+
+# Ensure NuGet packages folder exists
+ENV NUGET_PACKAGES=/root/.nuget/packages
+RUN mkdir -p /root/.nuget/packages
+
+# Copy csproj files first to restore dependencies (cache layer)
+COPY Api/Api.csproj Api/
+COPY Application/Application.csproj Application/
+COPY Domain/Domain.csproj Domain/
+COPY Persistence/Persistence.csproj Persistence/
+
+# Restore NuGet packages to avoid Windows fallback paths
+RUN dotnet restore Api/Api.csproj --packages /root/.nuget/packages
+
+# Install dotnet-ef globally so migrations can run inside the container
+RUN dotnet tool install --global dotnet-ef --version 10.0.0
+ENV PATH="$PATH:/root/.dotnet/tools"
+
+# Copy all source code
+COPY . .
+
+# Expose ports for development
+EXPOSE 5000
+EXPOSE 5001
+
+# Start the backend with hot reload
+CMD ["dotnet", "watch", "run", "--project", "Api/Api.csproj", "--urls", "http://0.0.0.0:5000"]

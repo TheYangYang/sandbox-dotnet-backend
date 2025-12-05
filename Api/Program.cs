@@ -1,6 +1,13 @@
+using Persistence;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Add DbContext
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Add OpenAPI
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
@@ -11,10 +18,10 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-// 🔹 Only use HTTPS redirection in non-Render environments
+// Only use HTTPS redirection in non-Render environments
 if (!app.Environment.IsProduction())
 {
-    app.UseHttpsRedirection();
+    // app.UseHttpsRedirection();
 }
 
 var summaries = new[]
