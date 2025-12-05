@@ -1,4 +1,4 @@
-name: CI/CD backend Production
+name: CI/CD Backend with Tests
 
 on:
   push:
@@ -6,31 +6,36 @@ on:
       - main
 
 jobs:
-  deploy-prod:
-    name: Deploy to Production
+  test-and-deploy:
+    name: Test and Deploy
     runs-on: ubuntu-latest
 
-    steps: 
+    steps:
+      # 1️⃣ Checkout the repo
       - uses: actions/checkout@v3
 
+      # 2️⃣ Setup .NET SDK
       - uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '10.0.x'
 
+      # 3️⃣ Restore dependencies
       - name: Restore dependencies
         run: dotnet restore sandbox.sln
 
+      # 4️⃣ Build backend
       - name: Build backend
         run: dotnet build Api/Api.csproj -c Release --no-restore
 
+      # 5️⃣ Run tests
       - name: Run tests
         run: dotnet test --no-build --verbosity normal
 
-      - name: Build Docker image
-        run: docker build -f Dockerfile.prod -t api .
-
+      # 6️⃣ Deploy to Render only if tests pass
       - name: Deploy to Render via Hook
+        if: success()  # Only runs if previous steps succeeded
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
         run: |
-            curl -X POST "https://api.render.com/deploy/srv-d4pj37p5pdvs7386rgg0?key=Lw0tW0nHu0Q"
-
-
+          echo "Deploying to Render..."
+          curl -X POST "$RENDER_DEPLOY_HOOK"
