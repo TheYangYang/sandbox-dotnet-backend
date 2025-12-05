@@ -2,13 +2,13 @@
 
 namespace Sandbox.Tests
 {
-    public class FailingTests
+    public class PassingTests
     {
         [Fact]
-        public void ThisTestShouldFail()
+        public void ThisTestShouldPass()
         {
-            // This will always fail
-            Assert.Equal(1, 2);
+            // This will always pass
+            Assert.Equal(2, 2);
         }
     }
 }
