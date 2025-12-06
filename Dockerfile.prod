@@ -47,7 +47,7 @@ COPY entrypoint.sh .
 RUN chmod +x entrypoint.sh
 
 # Render injects PORT env var
-ENV ASPNETCORE_URLS=http://0.0.0.0:5000
+ENV ASPNETCORE_URLS=http://0.0.0.0:$PORT
 ENV ASPNETCORE_HTTPS_PORT=""
 
 EXPOSE 80
