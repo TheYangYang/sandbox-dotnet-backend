@@ -1,8 +1,0 @@
-services:
-  - type: web
-    name: dotnet-backend
-    env: docker
-    dockerfilePath: Dockerfile.prod
-    instanceCount: 3   
-    plan: starter
-    port: 10000       

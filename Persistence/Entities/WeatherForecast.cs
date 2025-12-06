@@ -1,4 +1,3 @@
-// Persistence/Entities/WeatherForecast.cs
 namespace Persistence.Entities;
 
 public class WeatherForecast
