@@ -35,8 +35,11 @@ WORKDIR /app
 COPY --from=build /app/publish .
 
 # Render injects PORT env var
-ENV ASPNETCORE_URLS=http://0.0.0.0:$PORT
-ENV ASPNETCORE_HTTPS_PORT=""
+# ENV ASPNETCORE_URLS=""
+# ENV ASPNETCORE_HTTPS_PORT=""
+
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
 EXPOSE 80
 
