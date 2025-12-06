@@ -37,7 +37,7 @@ jobs:
       - name: Deploy to Railway
         if: success()
         env:
-          RAILWAY_API_KEY: ${{ secrets.RAILWAY_API_KEY }}
+          RAILWAY_API_KEY: ${{ secrets.RAILWAY_TOKEN }}
         run: |
-          railway login --apiKey $RAILWAY_API_KEY
+          railway login --apiKey RAILWAY_TOKEN
           railway up --detach
