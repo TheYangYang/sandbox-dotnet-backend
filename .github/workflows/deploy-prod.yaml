@@ -37,10 +37,23 @@ jobs:
         run: dotnet test sandbox.sln --verbosity normal
 
       # 6️. Deploy to Render only if tests pass
-      - name: Deploy to Render via Hook
+
+      - name: Check secret
+        run: |
+          echo "Length of first secret: ${#RENDER_DEPLOY_HOOK_1}"
+          echo "Length of second secret: ${#RENDER_DEPLOY_HOOK_2}"
+          echo "Length of third secret: ${#RENDER_DEPLOY_HOOK_3}"
+
+      - name: Deploy to all Render instances
         if: success()
         env:
-          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+          RENDER_DEPLOY_HOOK_1: ${{ secrets.RENDER_DEPLOY_HOOK_1 }}
+          RENDER_DEPLOY_HOOK_2: ${{ secrets.RENDER_DEPLOY_HOOK_2 }}
+          RENDER_DEPLOY_HOOK_3: ${{ secrets.RENDER_DEPLOY_HOOK_3 }}
         run: |
-          echo "Deploying to Render..."
-          curl -X POST "$RENDER_DEPLOY_HOOK"
+          echo "Deploying to first instance..."
+          curl -X POST "$RENDER_DEPLOY_HOOK_1"
+          echo "Deploying to second instance..."
+          curl -X POST "$RENDER_DEPLOY_HOOK_2"
+          echo "Deploying to third instance..."
+          curl -X POST "$RENDER_DEPLOY_HOOK_3"
