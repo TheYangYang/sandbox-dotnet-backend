@@ -34,9 +34,14 @@ jobs:
       - name: Install Railway CLI
         run: curl -fsSL https://railway.app/install.sh | sh
 
-      - name: Deploy to Railway
-        if: success()
+      - name: Login to Railway
+        run: echo $RAILWAY_TOKEN | railway login --ci
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+      - name: Deploy to Railway
+        if: success()
         run: |
-          railway up --detach --service backend
+          railway link --project 161770b9-ca95-4a78-9b54-ed5cbc2f9229 --environment a8afde73-61ac-422c-97c0-b78251148f25
+          railway up --detach --service cce0ac7f-6feb-4c6c-8950-09d6ee8abef3
+
