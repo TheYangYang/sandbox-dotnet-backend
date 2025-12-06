@@ -1,23 +1,34 @@
-# Build backend image
-build:
-	docker-compose -f docker-compose.dev.yaml build backend
-
-# Start backend, DB, and NGINX (NGINX is now the public entry point)
+# Start all services (Postgres, Redis, pgAdmin, Mailpit, RabbitMQ, Seq)
 up:
-	docker-compose -f docker-compose.dev.yaml up -d backend db nginx
+	docker-compose -f docker-compose.yaml up -d
 
-# Stop and remove all services (backend, DB, and NGINX)
+# Stop and remove all services
 down:
-	docker-compose -f docker-compose.dev.yaml down
+	docker-compose -f docker-compose.yaml down
 
-# Open interactive shell in backend
+# Open interactive shell in any service (replace SERVICE with service name)
 shell:
-	docker-compose -f docker-compose.dev.yaml run --rm backend sh
+	docker-compose -f docker-compose.yaml run --rm $(SERVICE)
 
-# Separate target to view backend logs
-logs-backend:
-	docker-compose -f docker-compose.dev.yaml logs -f backend
+# View logs for all services
+logs:
+	docker-compose -f docker-compose.yaml logs -f
 
-# NEW: Target to view NGINX logs (useful for debugging routing/404 issues)
-logs-nginx:
-	docker-compose -f docker-compose.dev.yaml logs -f nginx
+# View logs per service
+logs-seq:
+	docker-compose -f docker-compose.yaml logs -f seq
+
+logs-db:
+	docker-compose -f docker-compose.yaml logs -f db
+
+logs-redis:
+	docker-compose -f docker-compose.yaml logs -f redis
+
+logs-pgadmin:
+	docker-compose -f docker-compose.yaml logs -f pgadmin
+
+logs-mailpit:
+	docker-compose -f docker-compose.yaml logs -f mailpit
+
+logs-rabbitmq:
+	docker-compose -f docker-compose.yaml logs -f rabbitmq
