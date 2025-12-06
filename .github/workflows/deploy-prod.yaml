@@ -1,4 +1,4 @@
-name: CI/CD Backend with Tests
+name: CI Backend Tests
 
 on:
   push:
@@ -6,16 +6,19 @@ on:
       - main
 
 jobs:
-  test-and-deploy:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️ Checkout the repository
       - uses: actions/checkout@v3
 
+      # 2️ Setup .NET SDK
       - uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '10.0.x'
 
+      # 3️ Cache NuGet packages for faster builds
       - name: Cache NuGet packages
         uses: actions/cache@v3
         with:
@@ -24,24 +27,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-
 
-      - name: Restore & Build solution
+      # 4️ Restore & Build
+      - name: Build solution
         run: dotnet build sandbox.sln -c Release
 
+      # 5️ Run tests
       - name: Run tests
         run: dotnet test sandbox.sln --verbosity normal
-
-      # Deploy to Railway only if tests pass
-      - name: Install Railway CLI
-        run: curl -fsSL https://railway.app/install.sh | sh
-
-      - name: Login to Railway
-        run: echo $RAILWAY_TOKEN | railway login --ci
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-
-      - name: Deploy to Railway
-        if: success()
-        run: |
-          railway link --project 161770b9-ca95-4a78-9b54-ed5cbc2f9229 --environment a8afde73-61ac-422c-97c0-b78251148f25
-          railway up --detach --service cce0ac7f-6feb-4c6c-8950-09d6ee8abef3
-
