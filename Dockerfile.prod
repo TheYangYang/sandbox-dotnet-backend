@@ -19,6 +19,9 @@ COPY Application/ Application/
 COPY Domain/ Domain/
 COPY Persistence/ Persistence/
 
+# Remove launchSettings.json so it can't force localhost binding
+RUN rm -f Api/Properties/launchSettings.json
+
 # Publish API project
 RUN dotnet publish Api/Api.csproj -c Release -o /app/publish
 
@@ -36,16 +39,15 @@ RUN apt-get update && \
 # Copy published output
 COPY --from=build /app/publish .
 
-#2. Copy the NGINX production configuration file
+# 2. Copy the NGINX production configuration file
 COPY nginx/nginx.prod.conf /etc/nginx/conf.d/default.conf
-# Remove the default site configuration link that NGINX uses
 
 # 3. Copy and set executable permissions for the startup script
 COPY entrypoint.sh .
 RUN chmod +x entrypoint.sh
 
 # Render injects PORT env var
-ENV ASPNETCORE_URLS=http://127.0.0.1:5000
+ENV ASPNETCORE_URLS=http://0.0.0.0:5000
 ENV ASPNETCORE_HTTPS_PORT=""
 
 EXPOSE 80
