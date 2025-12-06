@@ -31,20 +31,8 @@ RUN dotnet publish Api/Api.csproj -c Release -o /app/publish
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 
-# 1. Install Nginx
-RUN apt-get update && \
-    apt-get install -y nginx && \
-    rm -rf /var/lib/apt/lists/*
-
 # Copy published output
 COPY --from=build /app/publish .
-
-# 2. Copy the NGINX production configuration file
-COPY nginx/nginx.prod.conf /etc/nginx/conf.d/default.conf
-
-# 3. Copy and set executable permissions for the startup script
-COPY entrypoint.sh .
-RUN chmod +x entrypoint.sh
 
 # Render injects PORT env var
 ENV ASPNETCORE_URLS=http://0.0.0.0:$PORT
