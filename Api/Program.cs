@@ -45,9 +45,15 @@ return forecast;
 })
 .WithName("GetWeatherForecast");
 
+var serviceName = Environment.GetEnvironmentVariable("SERVICE_NAME") ?? "backend-default";
+
+app.MapGet("/ping", () => new { Service = serviceName, Time = DateTime.UtcNow });
+
 app.Run();
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }
+
+
